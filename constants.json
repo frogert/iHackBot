@@ -1,0 +1,9 @@
+{
+	"commands": [
+	    "help",
+	    "roles",
+	    "give",
+	    "learn",
+	    "speak"
+	]
+}
