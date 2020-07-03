@@ -15,6 +15,9 @@ function executeCommand(words, message) {
         case 'give':
             doGive(message)
             break
+        case 'ungive':
+            doUngive(message)
+            break
         case 'learn':
             doLearn(message)
             break
@@ -55,8 +58,33 @@ function doRoles(message) {
 // Allows a user to give themself a role.
 // TODO: This method should allow users to assign/unassign themselves to game roles
 function doGive(message) {
-    roleMatches = RoleHelper.flairRoleMatches(message.content.split(' ')[2], message.guild.roles)
+    roleMatches = RoleHelper.flairRoleMatches(message.content.split(' ').slice(2).join(' '), message.guild.roles)
     // Now give user all roles listed
+    if (roleMatches.length == 0) {
+        message.reply('No flair. Try *harder*!')
+    }
+    else {
+        for (role of roleMatches) {
+            message.member.roles.add(role);
+        }
+        message.reply('DONE!')
+    }
+}
+
+// Allows a user to give themself a role.
+// TODO: This method should allow users to assign/unassign themselves to game roles
+function doUngive(message) {
+    roleMatches = RoleHelper.flairRoleMatches(message.content.split(' ').slice(2).join(' '), message.guild.roles)
+    // Now give user all roles listed
+    if (roleMatches.length == 0) {
+        message.reply('No flair. Try *harder*!')
+    }
+    else {
+        for (role of roleMatches) {
+            message.member.roles.remove(role);
+        }
+        message.reply('DONE!')
+    }
 }
 
 // Stores a word for the bot to recite.
