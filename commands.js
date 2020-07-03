@@ -1,4 +1,5 @@
 const Constants = require('./constants.json')
+const RoleHelper = require('./role_helper.js')
 
 // Executes a command based on a command word
 function executeCommand(words, message) {
@@ -54,7 +55,8 @@ function doRoles(message) {
 // Allows a user to give themself a role.
 // TODO: This method should allow users to assign/unassign themselves to game roles
 function doGive(message) {
-    message.guild.roles // => RoleManager
+    roleMatches = RoleHelper.flairRoleMatches(message.content.split(' ')[2], message.guild.roles)
+    // Now give user all roles listed
 }
 
 // Stores a word for the bot to recite.
