@@ -5,7 +5,7 @@
   "main": "index.js",
   "author": "Jules",
   "dependencies": {
-    "discord.js": "^12.2.0"
+    "discord.js": "^12.3.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
