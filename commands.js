@@ -1,5 +1,6 @@
 const Constants = require('./constants.json')
 const RoleHelper = require('./role_helper.js')
+const fs = require('fs')
 
 // Executes a command based on a command word
 function executeCommand(words, message) {
@@ -24,6 +25,12 @@ function executeCommand(words, message) {
         case 'speak':
             doSpeak(message)
             break
+        case 'register':
+            doRegister(message)
+            break
+        case 'display':
+            doDisplay(message)
+            break
         default:
             doDefault(message)
             break
@@ -32,6 +39,7 @@ function executeCommand(words, message) {
 
 // TODO: move this to a memory file so it actually remembers stuff
 new_word = 'hissssssss'
+registry = {}
 
 // Displays commands.
 function doHelp(message) {
@@ -40,25 +48,23 @@ function doHelp(message) {
 
 // Displays confusion due to incorrect command.
 function doDefault(message) {
-    message.reply('*?????????*')
-    message.reply('*do you need help?*')
+    message.channel.send('*?????????*')
+    message.channel.send('*do you need help?*')
 }
 
 // Displays server roles.
 function doRoles(message) {
-    roles = []
-    message.guild.roles.cache.forEach(function(role) {
-        roles.push(role.name)
-    })
-    roles.shift() // removes @everyone, cause it prints and tags @everyone otherwise :[
+    role_manager = message.guild.roles
 
-    message.reply(`*ROLES!*\n\n\`\`\`\n${roles.join('\n')}\n\`\`\``)
+    message.reply(RoleHelper.generateUserFriendlyRoleList(role_manager))
 }
 
 // Allows a user to give themself a role.
-// TODO: This method should allow users to assign/unassign themselves to game roles
 function doGive(message) {
-    roleMatches = RoleHelper.flairRoleMatches(message.content.split(' ').slice(2).join(' '), message.guild.roles)
+    role_name = message.content.split(' ').slice(2).join(' ')
+    role_manager = message.guild.roles
+
+    roleMatches = RoleHelper.flairRoleMatches(role_name, role_manager)
     // Now give user all roles listed
     if (roleMatches.length == 0) {
         message.reply('No flair. Try *harder*!')
@@ -71,10 +77,14 @@ function doGive(message) {
     }
 }
 
-// Allows a user to give themself a role.
-// TODO: This method should allow users to assign/unassign themselves to game roles
+// Allows a user to remove a role.
 function doUngive(message) {
-    roleMatches = RoleHelper.flairRoleMatches(message.content.split(' ').slice(2).join(' '), message.guild.roles)
+    role_name = message.content.split(' ').slice(2).join(' ')
+    // RoleHelper.doActionOnRole(message, role_name, message.member.roles.remove)
+
+    role_manager = message.guild.roles
+
+    roleMatches = RoleHelper.flairRoleMatches(role_name, role_manager)
     // Now give user all roles listed
     if (roleMatches.length == 0) {
         message.reply('No flair. Try *harder*!')
@@ -112,5 +122,50 @@ ${new_word.slice(0,2)}...\
 ${new_word.toUpperCase()}!`)
 }
 
+// Stores a mapping of user to steam name
+function doRegister(message) {
+    steam_id = message.content.split(' ')
+    steam_id.shift()
+    steam_id.shift()
+    updateRegistry(steam_id, message.author.id)
+    message.reply(`Registered as ${steam_id}!`)
+    console.log(message)
+}
+
+function notifyUser(message) {
+    loadRegistry()
+    console.log(`Notifying users on message ${message.content}`)
+    to_send = []
+    for (word of message.content.split(' ')) {
+        if (registry[processWord(word)]) { to_send.push(`<@${registry[processWord(word)]}>`) }
+    }
+    if (to_send.length) { message.channel.send(to_send.join(' ')) }
+}
+
+function processWord(word) {
+    return word.slice(1)
+}
+
+function loadRegistry() {
+    try {
+        raw = fs.readFileSync('../registry.json')
+        registry = JSON.parse(raw)
+    } catch (err) {
+        console.log(`ERROR LOADING REGISTRY: ${err}`)
+    }
+}
+
+// this function needs to support tracking different servers
+function updateRegistry(key, value) {
+    registry[key] = value
+    fs.writeFileSync('../registry.json', JSON.stringify(registry))
+}
+
+function doDisplay(message) {
+    loadRegistry()
+    message.channel.send(`Registry!:\n\n${JSON.stringify(registry)}`)
+}
+
 // Exports the command switch for use in index.js
 exports.executeCommand = executeCommand
+exports.notifyUser = notifyUser

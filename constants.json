@@ -5,6 +5,8 @@
 		"give",
 		"ungive",
 	    "learn",
-	    "speak"
+	    "speak",
+	    "register",
+	    "display"
 	]
 }

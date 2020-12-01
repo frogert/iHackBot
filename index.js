@@ -17,10 +17,14 @@ client.on('ready', () => {
 // Message handling
 
 client.on('message', msg => {
+	console.log(msg)
     words = tokenizeMessage(msg)
 
     if (isCalledByName(words.shift())) {
         Commands.executeCommand(words, msg)
+    }
+    if (isCivNotification(msg)) {
+    	Commands.notifyUser(msg)
     }
 })
 
@@ -35,5 +39,8 @@ function isCalledByName(word) {
     return ['scratch', 'klefstad', 'churchki'].includes(word.toLowerCase())
 }
 
+function isCivNotification(message) {
+	return message.author.username === "Civ Hook"
+}
 
 client.login(token.token)
