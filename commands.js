@@ -145,24 +145,20 @@ function notifyUser(message) {
     loadRegistry()
     console.log(`Notifying users on message ${message.content}`)
     to_send = []
-    // make word processing better. please.
-    word = message.content.slice(4,-22)
-    console.log(`Notifying user: "${processWord(word)}"`)
+    user = message.split(' ||| ')[0]
+    game = message.split(' ||| ')[1]
+    console.log(`Notifying user: "${user}"`)
 
-    if (registry[processWord(word)]) {
+    if (registry[user]) {
         try {
-            turn = processWord(word)
-            message.guild.members.cache.get(registry[processWord(word)]).send(`${processWord(word)}, your turn in civ!`)
+            turn = user
+            message.guild.members.cache.get(registry[user]).send(`${user}, your turn in civ! Game: "${game}"`)
             message.delete()
         } catch (err) {
             console.log(message)
             console.log(`ERROR SENDING MESSAGE: ${err}`)
         }
     }
-}
-
-function processWord(word) {
-    return word.slice(1)
 }
 
 function loadRegistry() {

@@ -17,13 +17,17 @@ client.on('ready', () => {
 // Message handling
 
 client.on('message', msg => {
-    words = tokenizeMessage(msg)
+	try {
+	    words = tokenizeMessage(msg)
 
-    if (isCalledByName(words.shift())) {
-        Commands.executeCommand(words, msg)
-    }
-    if (isCivNotification(msg)) {
-    	Commands.notifyUser(msg)
+	    if (isCalledByName(words.shift())) {
+	        Commands.executeCommand(words, msg)
+	    }
+	    if (isCivNotification(msg)) {
+	    	Commands.notifyUser(msg)
+	    }
+    } catch (err) {
+    	console.log(`ERROR PROCESSING MESSAGE: ${err}`)
     }
 })
 
