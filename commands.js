@@ -31,6 +31,9 @@ function executeCommand(words, message) {
         case 'display':
             doDisplay(message)
             break
+        case 'turn':
+            doTurn(message)
+            break
         default:
             doDefault(message)
             break
@@ -40,6 +43,7 @@ function executeCommand(words, message) {
 // TODO: move this to a memory file so it actually remembers stuff
 new_word = 'hissssssss'
 registry = {}
+turn = null
 
 // Displays commands.
 function doHelp(message) {
@@ -127,19 +131,34 @@ function doRegister(message) {
     steam_id = message.content.split(' ')
     steam_id.shift()
     steam_id.shift()
+    steam_id = steam_id.join(' ')
     updateRegistry(steam_id, message.author.id)
     message.reply(`Registered as ${steam_id}!`)
     console.log(message)
+}
+
+function doTurn(message) {
+    (turn == null) ? message.channel.send("\\**shrugs*\\*") : message.channel.send(turn + '!')
 }
 
 function notifyUser(message) {
     loadRegistry()
     console.log(`Notifying users on message ${message.content}`)
     to_send = []
-    for (word of message.content.split(' ')) {
-        if (registry[processWord(word)]) { to_send.push(`<@${registry[processWord(word)]}>`) }
+    // make word processing better. please.
+    word = message.content.slice(4,-22)
+    console.log(`Notifying user: "${processWord(word)}"`)
+
+    if (registry[processWord(word)]) {
+        try {
+            turn = processWord(word)
+            message.guild.members.cache.get(registry[processWord(word)]).send(`${processWord(word)}, your turn in civ!`)
+            message.delete()
+        } catch (err) {
+            console.log(message)
+            console.log(`ERROR SENDING MESSAGE: ${err}`)
+        }
     }
-    if (to_send.length) { message.channel.send(to_send.join(' ')) }
 }
 
 function processWord(word) {
@@ -150,6 +169,7 @@ function loadRegistry() {
     try {
         raw = fs.readFileSync('../registry.json')
         registry = JSON.parse(raw)
+        console.log(`Loaded registry: ${JSON.stringify(registry)}`)
     } catch (err) {
         console.log(`ERROR LOADING REGISTRY: ${err}`)
     }
@@ -157,8 +177,10 @@ function loadRegistry() {
 
 // this function needs to support tracking different servers
 function updateRegistry(key, value) {
+    loadRegistry()
     registry[key] = value
     fs.writeFileSync('../registry.json', JSON.stringify(registry))
+    console.log(`Updated registry: ${JSON.stringify(registry)}`)
 }
 
 function doDisplay(message) {

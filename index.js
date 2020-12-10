@@ -17,7 +17,6 @@ client.on('ready', () => {
 // Message handling
 
 client.on('message', msg => {
-	console.log(msg)
     words = tokenizeMessage(msg)
 
     if (isCalledByName(words.shift())) {
