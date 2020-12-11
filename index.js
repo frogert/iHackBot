@@ -4,6 +4,7 @@ const Discord = require('discord.js')
 
 const token = require('./token.json')
 const Commands = require('./commands.js')
+const LogManager = require('./log_manager.js')
 
 
 // Client initialization
@@ -21,14 +22,15 @@ client.on('message', msg => {
 	    words = tokenizeMessage(msg)
 
 	    if (isCalledByName(words.shift())) {
-	        Commands.executeCommand(words, msg)
+			Commands.executeCommand(words, msg)
 	    }
 	    if (isCivNotification(msg)) {
 	    	Commands.notifyUser(msg)
 	    }
     } catch (err) {
     	console.log(msg)
-    	console.log(`ERROR PROCESSING MESSAGE: ${err}`)
+		console.log(`ERROR PROCESSING MESSAGE: ${err}`)
+		LogManager.log(err)
     }
 })
 
@@ -48,3 +50,4 @@ function isCivNotification(message) {
 }
 
 client.login(token.token)
+LogManager.createLogDirectory()
