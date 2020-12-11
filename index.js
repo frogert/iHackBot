@@ -22,6 +22,7 @@ client.on('message', msg => {
 	    words = tokenizeMessage(msg)
 
 	    if (isCalledByName(words.shift())) {
+			LogManager.log(msg.content)
 			Commands.executeCommand(words, msg)
 	    }
 	    if (isCivNotification(msg)) {
@@ -29,7 +30,7 @@ client.on('message', msg => {
 	    }
     } catch (err) {
     	console.log(msg)
-		console.log(`ERROR PROCESSING MESSAGE: ${err}`)
+		console.log(`${Date()}: ERROR PROCESSING MESSAGE: ${err}`)
 		LogManager.log(err)
     }
 })

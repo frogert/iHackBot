@@ -21,19 +21,25 @@ function createLogDirectory() {
 }
 
 function log(message) {
-	if (!logIsAtFileCap()) {
-		fs.appendFileSync(currentLogLocation(), `${message}\n`)
-	} else {
-		fs.writeFileSync(currentLogLocation(), `${message}\n`)
-	}
+	deleteOldestLogs()
+	fs.appendFileSync(currentLogLocation(), `${Date()}: ${message}\n`)
 }
 
-function logIsAtFileCap() {
+function deleteOldestLogs() {
 	size = 0
+	oldestLogTime = Infinity
+	logToDelete = null
 	fs.readdirSync(LOG_DIRECTORY).forEach((file) => {
+		logTime = fs.statSync(LOG_DIRECTORY + file).birthtime
 		size += fs.statSync(LOG_DIRECTORY + file).size
+		if (logTime < oldestLogTime) {
+			oldestLogTime = logTime
+			logToDelete = file
+		}
 	})
-	return size >= ALLOCATED_LOG_SPACE_BYTES
+	if (size >= ALLOCATED_LOG_SPACE_BYTES) {
+		fs.unlinkSync(LOG_DIRECTORY + logToDelete)
+	}
 }
 
 function currentLogLocation() {
