@@ -22,7 +22,6 @@ client.on('message', msg => {
 	    words = tokenizeMessage(msg)
 
 	    if (isCalledByName(words.shift())) {
-			LogManager.log(msg.content)
 			Commands.executeCommand(words, msg)
 	    }
 	    if (isCivNotification(msg)) {
