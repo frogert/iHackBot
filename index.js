@@ -27,6 +27,7 @@ client.on('message', msg => {
 	    	Commands.notifyUser(msg)
 	    }
     } catch (err) {
+    	console.log(msg)
     	console.log(`ERROR PROCESSING MESSAGE: ${err}`)
     }
 })

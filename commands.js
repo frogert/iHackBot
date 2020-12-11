@@ -145,30 +145,21 @@ function notifyUser(message) {
     loadRegistry()
     console.log(`Notifying users on message ${message.content}`)
     to_send = []
-    user = message.split(' ||| ')[0]
-    game = message.split(' ||| ')[1]
+    user = message.content.split(' ||| ')[0]
+    game = message.content.split(' ||| ')[1]
     console.log(`Notifying user: "${user}"`)
 
     if (registry[user]) {
-        try {
-            turn = user
-            message.guild.members.cache.get(registry[user]).send(`${user}, your turn in civ! Game: "${game}"`)
-            message.delete()
-        } catch (err) {
-            console.log(message)
-            console.log(`ERROR SENDING MESSAGE: ${err}`)
-        }
+        turn = user
+        message.guild.members.cache.get(registry[user]).send(`${user}, your turn in civ! Game: "${game}"`)
+        message.delete()
     }
 }
 
 function loadRegistry() {
-    try {
-        raw = fs.readFileSync('../registry.json')
-        registry = JSON.parse(raw)
-        console.log(`Loaded registry: ${JSON.stringify(registry)}`)
-    } catch (err) {
-        console.log(`ERROR LOADING REGISTRY: ${err}`)
-    }
+    raw = fs.readFileSync('../registry.json')
+    registry = JSON.parse(raw)
+    console.log(`Loaded registry: ${JSON.stringify(registry)}`)
 }
 
 // this function needs to support tracking different servers
