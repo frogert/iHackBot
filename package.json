@@ -5,11 +5,11 @@
   "main": "index.js",
   "author": "Jules",
   "dependencies": {
-    "discord.js": "^12.3.1",
+    "discord.js": "^12.5.1",
     "minecraft-realms": "0.0.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.6"
   },
   "scripts": {
     "start": "node index.js",
