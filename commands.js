@@ -138,7 +138,7 @@ function doRegister(message) {
 }
 
 function doTurn(message) {
-    if (turns == {}) {
+    if (Object.keys(turns).length == 0) {
         return message.channel.send("\\**shrugs*\\*")
     }
 
