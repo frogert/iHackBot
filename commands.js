@@ -43,7 +43,7 @@ function executeCommand(words, message) {
 // TODO: move this to a memory file so it actually remembers stuff
 new_word = 'hissssssss'
 registry = {}
-turn = null
+turns = {}
 
 // Displays commands.
 function doHelp(message) {
@@ -138,7 +138,13 @@ function doRegister(message) {
 }
 
 function doTurn(message) {
-    (turn == null) ? message.channel.send("\\**shrugs*\\*") : message.channel.send(turn + '!')
+    if (turns == {}) {
+        return message.channel.send("\\**shrugs*\\*")
+    }
+
+    Object.entries(turns).forEach((entry) => {
+        message.channel.send(`Game: ${entry[0]}, Turn: ${entry[1]}!`)
+    })
 }
 
 function notifyUser(message) {
@@ -150,7 +156,7 @@ function notifyUser(message) {
     console.log(`Notifying user: "${user}"`)
 
     if (registry[user]) {
-        turn = user
+        turns[game] = user
         message.guild.members.cache.get(registry[user]).send(`${user}, your turn in civ! Game: "${game}"`)
         message.delete()
     }
